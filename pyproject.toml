@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "skypro-django-hw1"
+version = "0.1.0"
+description = ""
+authors = ["Maxxchop <4mu@bk.ru>"]
+readme = "README.md"
+packages = [{include = "skypro_django_hw1"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
