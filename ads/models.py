@@ -37,7 +37,7 @@ class User(models.Model):
     password = models.CharField(max_length=20)
     role = models.CharField(max_length=9, choices=ROLE, default='member')
     age = models.IntegerField()
-    location = models.ForeignKey(Location, on_delete=models.CASCADE, null=True)
+    locations = models.ManyToManyField(Location)
 
     class Meta:
         verbose_name = 'Пользователь'
@@ -53,7 +53,7 @@ class Ad(models.Model):
     price = models.IntegerField()
     description = models.TextField(max_length=10000)
     is_published = models.BooleanField()
-    image = models.ImageField(upload_to='logos/', null=True)
+    image = models.ImageField(upload_to='images/', null=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True)
 
     class Meta:
