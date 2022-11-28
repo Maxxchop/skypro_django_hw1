@@ -8,26 +8,26 @@ def csv_to_json(filename):
         data = csv.reader(f)
         keys = []
         result = []
-        model_name = 'ads.Ad'
+        model_name = 'ads.Location'
         for row in data:
             if not keys:
                 keys = row  # первая строчка -- это ключи
             else:
                 dct = {}
                 dct = dict(zip(keys, row))
-                dct['price'] = int(dct['price'])
-                dct['is_published'] = dct['is_published'] == 'TRUE'
-                pk = int(dct.pop('Id'))
+                dct['lat'] = float(dct['lat'])
+                dct['lng'] = float(dct['lng'])
+                pk = int(dct.pop('id'))
                 result.append({
                     "model": model_name,
                     "pk": pk,
                     "fields": dct
                 })
-        with open('ads.json', 'w', encoding='utf8') as f:
+        with open('location.json', 'w', encoding='utf8') as f:
             json.dump(result, f, ensure_ascii=False, indent=4)
         return json.dumps(result, ensure_ascii=False)
 
 
-csv_to_json('./ads.csv')
+csv_to_json('./datasets/location.csv')
 
 
