@@ -1,6 +1,7 @@
 import json
 
 from django.core.paginator import Paginator
+from django.db.models import Count
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
@@ -253,7 +254,10 @@ class UserListView(ListView):
 
         self.object_list = self.object_list.order_by("username")
         users = []
-        for user in self.object_list:
+
+        user_qs = User.objects.annotate(ads=Count("ad"))
+
+        for user in user_qs:
             users.append({
                 "id": user.id,
                 "first_name": user.first_name,
@@ -262,7 +266,8 @@ class UserListView(ListView):
                 "password": user.password,
                 "role": user.role,
                 "age": user.age,
-                "locations": list(map(str, user.locations.all()))
+                "locations": list(map(str, user.locations.all())),
+                "total_ads": user.ads
             })
 
         return JsonResponse(users, safe=False)
