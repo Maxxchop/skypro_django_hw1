@@ -25,6 +25,7 @@ urlpatterns = [
     path("", views.root),
     path("ad/", include('ads.urls')),
     path("cat/", include('ads.cat_urls')),
+    path("user/", include('ads.user_urls')),
 ]
 
 if settings.DEBUG:
