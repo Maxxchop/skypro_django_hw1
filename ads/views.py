@@ -7,8 +7,12 @@ from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import DetailView, ListView, CreateView, UpdateView, DeleteView
+from rest_framework.generics import ListAPIView, RetrieveAPIView, CreateAPIView, UpdateAPIView, DestroyAPIView
+from rest_framework.viewsets import ModelViewSet
 
 from ads.models import Ad, Category, User, Location
+from ads.serializers import UserListSerializer, UserDetailSerializer, UserCreateSerializer, UserUpdateSerializer, \
+    UserDestroySerializer, LocationSerializer
 from skypro_django_hw1 import settings
 
 
@@ -17,6 +21,10 @@ def root(request):
     return JsonResponse({"status": "ok"}, status=200)
 #    return JsonResponse(csv_to_json('./ads.csv'), safe=False, status=200)
 
+
+class LocationViewSet(ModelViewSet):
+    queryset = Location.objects.all()
+    serializer_class = LocationSerializer
 
 # ------------------- Ad views ---------------------
 class AdListView(ListView):
@@ -246,133 +254,26 @@ class CatDeleteView(DeleteView):
 
 
 # ------------------- User views ---------------------
-class UserListView(ListView):
-    model = User
-
-    def get(self, request, *args, **kwargs):
-        super().get(request, *args, **kwargs)
-
-        self.object_list = self.object_list.order_by("username")
-        users = []
-
-        user_qs = User.objects.annotate(ads=Count("ad"))
-
-        for user in user_qs:
-            users.append({
-                "id": user.id,
-                "first_name": user.first_name,
-                "last_name": user.last_name,
-                "username": user.username,
-                "password": user.password,
-                "role": user.role,
-                "age": user.age,
-                "locations": list(map(str, user.locations.all())),
-                "total_ads": user.ads
-            })
-
-        return JsonResponse(users, safe=False)
+class UserListView(ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserListSerializer
 
 
-class UserDetailView(DetailView):
-    model = User
-
-    def get(self, *args, **kwargs):
-        user = self.get_object()
-
-        return JsonResponse({
-            "id": user.id,
-            "first_name": user.first_name,
-            "last_name": user.last_name,
-            "username": user.username,
-            "password": user.password,
-            "role": user.role,
-            "age": user.age,
-            "locations": list(map(str, user.locations.all()))
-        })
+class UserDetailView(RetrieveAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserDetailSerializer
 
 
-@method_decorator(csrf_exempt, name='dispatch')
-class UserCreateView(CreateView):
-    model = User
-    fields = ["first_name", "last_name", "username", "password", "role", "age", "locations"]
-
-    def post(self, request, *args, **kwargs):
-        user_data = json.loads(request.body)
-
-        user = User.objects.create(
-            first_name=user_data["first_name"],
-            last_name=user_data["last_name"],
-            username=user_data["username"],
-            password=user_data["password"],
-            role=user_data["role"],
-            age=user_data["age"]
-        )
-
-        for location in user_data['locations']:
-            location_obj, created = Location.objects.get_or_create(
-                name=location,
-                defaults={
-                    "lat": 0,
-                    "lng": 0
-                }
-            )
-            user.locations.add(location_obj)
-        user.save()
-
-        return JsonResponse({
-            "id": user.id,
-            "first_name": user.first_name,
-            "last_name": user.last_name,
-            "username": user.username,
-            "password": user.password,
-            "role": user.role,
-            "age": user.age,
-            "locations": list(map(str, user.locations.all()))
-        })
+class UserCreateView(CreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserCreateSerializer
 
 
-@method_decorator(csrf_exempt, name='dispatch')
-class UserUpdateView(UpdateView):
-    model = User
-    fields = ["first_name", "last_name", "password", "role", "age", "locations"]
-
-    def patch(self, request, *args, **kwargs):
-        super().post(request, *args, **kwargs)
-
-        user_data = json.loads(request.body)
-        self.object.first_name = user_data["first_name"]
-        self.object.last_name = user_data["last_name"]
-        self.object.password = user_data["password"]
-        self.object.role = user_data["role"]
-        self.object.age = user_data["age"]
-
-        for location in user_data['locations']:
-            try:
-                location_obj = Location.objects.get(name=location)
-            except Location.DoesNotExist:
-                return JsonResponse({"error": "Location  not found"}, status=404)
-            self.object.locations.add(location_obj)
-
-        self.object.save()
-
-        return JsonResponse({
-            "id": self.object.id,
-            "first_name": self.object.first_name,
-            "last_name": self.object.last_name,
-            "username": self.object.username,
-            "password": self.object.password,
-            "role": self.object.role,
-            "age": self.object.age,
-            "locations": list(self.object.locations.all().values_list("name", flat=True))
-        })
+class UserUpdateView(UpdateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserUpdateSerializer
 
 
-@method_decorator(csrf_exempt, name='dispatch')
-class UserDeleteView(DeleteView):
-    model = User
-    success_url = '/'
-
-    def delete(self, request, *args, **kwargs):
-        super().delete(request, *args, **kwargs)
-
-        return JsonResponse({"status": "ok"}, status=200)
+class UserDeleteView(DestroyAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserDestroySerializer
