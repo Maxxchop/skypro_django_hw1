@@ -31,10 +31,25 @@ class AdListView(ListView):
     model = Ad
     def get(self, request, *args, **kwargs):
         super().get(request, *args, **kwargs)
-        #
-        # search_text = request.GET.get("text", None)
-        # if search_text:
-        #     self.object_list = self.object_list.filter(name=search_text)
+
+        category_id = request.GET.get("category_id", None)
+        if category_id:
+            self.object_list = self.object_list.filter(category_id__exact=category_id)
+
+        name_text = request.GET.get("text", None)
+        if name_text:
+            self.object_list = self.object_list.filter(name__icontains=name_text)
+
+        location_name = request.GET.get("location", None)
+        if location_name:
+            self.object_list = self.object_list.filter(author__locations__name__icontains=location_name)
+
+        price_from = request.GET.get("price_from", None)
+        price_to = request.GET.get("price_to", None)
+        if price_from:
+            self.object_list = self.object_list.filter(price__gte=price_from)
+        if price_to:
+            self.object_list = self.object_list.filter(price__lte=price_to)
 
         #self.object_list = self.object_list.select_related("user").prefetch_related("skills").order_by('text')
         self.object_list = self.object_list.order_by("-price")
@@ -56,9 +71,9 @@ class AdListView(ListView):
                 'image': ad.image.url if ad.image else None
             })
         response = {
-            "items": ads,
             "num_pages": paginator.num_pages,
-            "total": paginator.count
+            "total": paginator.count,
+            "items": ads
         }
 
         return JsonResponse(response, safe=False)
