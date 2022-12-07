@@ -2,8 +2,8 @@
 
 Чтобы восстановить данные из json-файлов, необходимо выполнить команды:
 
-  ./manage.py loaddata ads.json
+  ./manage.py loaddata ad.json
   ./manage.py loaddata categories.json
-  ./manage.py loaddata users.json
-  ./manage.py loaddata locations.json
+  ./manage.py loaddata user.json
+  ./manage.py loaddata location.json
   
