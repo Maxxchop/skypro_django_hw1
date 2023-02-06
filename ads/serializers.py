@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
-from ads.models import User, Location
+from ads.models import Ad
+from authentication.models import Location, User
 
 
 class LocationSerializer(serializers.ModelSerializer):
@@ -41,13 +42,13 @@ class UserCreateSerializer(serializers.ModelSerializer):
         many=True,
         queryset=Location.objects.all()
     )
-
+    age = serializers.IntegerField(required=False, default=18)
     class Meta:
         model = User
         fields = '__all__'
 
     def is_valid(self, raise_exception=False):
-        self._locations = self.initial_data.pop('locations')
+        self._locations = self.initial_data.pop('locations', [])
         return super().is_valid(raise_exception=raise_exception)
 
     def create(self, validated_data):
@@ -62,6 +63,9 @@ class UserCreateSerializer(serializers.ModelSerializer):
                     }
                 )
             user.locations.add(location_obj)
+
+        user.set_password(user.password)
+
         user.save()
         return user
 
@@ -103,3 +107,10 @@ class UserDestroySerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id']
+
+
+class AdDetailSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Ad
+        fields = '__all__'

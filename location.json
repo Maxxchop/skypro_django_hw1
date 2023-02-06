@@ -1,6 +1,6 @@
 [
     {
-        "model": "ads.Location",
+        "model": "authentication.Location",
         "pk": 1,
         "fields": {
             "name": "Москва, м. Студенческая",
@@ -9,7 +9,7 @@
         }
     },
     {
-        "model": "ads.Location",
+        "model": "authentication.Location",
         "pk": 2,
         "fields": {
             "name": "Москва, м. Черкизовская",
@@ -18,7 +18,7 @@
         }
     },
     {
-        "model": "ads.Location",
+        "model": "authentication.Location",
         "pk": 3,
         "fields": {
             "name": "Санкт-Петербург, м. Невский проспект",
@@ -27,7 +27,7 @@
         }
     },
     {
-        "model": "ads.Location",
+        "model": "authentication.Location",
         "pk": 4,
         "fields": {
             "name": "Москва, м. Библиотека имени Ленина",
@@ -36,7 +36,7 @@
         }
     },
     {
-        "model": "ads.Location",
+        "model": "authentication.Location",
         "pk": 5,
         "fields": {
             "name": "Москва, м. Комсомольская",
@@ -45,7 +45,7 @@
         }
     },
     {
-        "model": "ads.Location",
+        "model": "authentication.Location",
         "pk": 6,
         "fields": {
             "name": "Санкт-Петербург, м. Чернышевская",
@@ -54,7 +54,7 @@
         }
     },
     {
-        "model": "ads.Location",
+        "model": "authentication.Location",
         "pk": 7,
         "fields": {
             "name": "Пушкин, Павловское шоссе 23/2",
@@ -63,7 +63,7 @@
         }
     },
     {
-        "model": "ads.Location",
+        "model": "authentication.Location",
         "pk": 8,
         "fields": {
             "name": "Сакнт-Петербург, м. Балтийская",
@@ -72,7 +72,7 @@
         }
     },
     {
-        "model": "ads.Location",
+        "model": "authentication.Location",
         "pk": 9,
         "fields": {
             "name": "Москва, м. Беломорская",
@@ -81,7 +81,7 @@
         }
     },
     {
-        "model": "ads.Location",
+        "model": "authentication.Location",
         "pk": 10,
         "fields": {
             "name": "Москва, м. Электрозаодская",

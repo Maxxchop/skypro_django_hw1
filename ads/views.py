@@ -8,11 +8,14 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import DetailView, ListView, CreateView, UpdateView, DeleteView
 from rest_framework.generics import ListAPIView, RetrieveAPIView, CreateAPIView, UpdateAPIView, DestroyAPIView
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import ModelViewSet
+from rest_framework.decorators import permission_classes
 
-from ads.models import Ad, Category, User, Location
+from ads.models import Ad, Category, User
 from ads.serializers import UserListSerializer, UserDetailSerializer, UserCreateSerializer, UserUpdateSerializer, \
-    UserDestroySerializer, LocationSerializer
+    UserDestroySerializer, LocationSerializer, AdDetailSerializer
+from authentication.models import Location
 from skypro_django_hw1 import settings
 
 
@@ -25,6 +28,7 @@ def root(request):
 class LocationViewSet(ModelViewSet):
     queryset = Location.objects.all()
     serializer_class = LocationSerializer
+
 
 # ------------------- Ad views ---------------------
 class AdListView(ListView):
@@ -79,22 +83,27 @@ class AdListView(ListView):
         return JsonResponse(response, safe=False)
 
 
-class AdDetailView(DetailView):
-    model = Ad
-
-    def get(self, *args, **kwargs):
-        ad = self.get_object()
-
-        return JsonResponse({
-            'id': ad.id,
-            'name': ad.name,
-            "author": ad.author.username,
-            "price": ad.price,
-            'description': ad.description,
-            'is_published': ad.is_published,
-            'category': ad.category.name,
-            'image': ad.image.url if ad.image else None
-        })
+# class AdDetailView(DetailView):
+#     model = Ad
+#     permission_classes = [IsAuthenticated]
+#     def get(self, *args, **kwargs):
+#
+#         ad = self.get_object()
+#
+#         return JsonResponse({
+#             'id': ad.id,
+#             'name': ad.name,
+#             "author": ad.author.username,
+#             "price": ad.price,
+#             'description': ad.description,
+#             'is_published': ad.is_published,
+#             'category': ad.category.name,
+#             'image': ad.image.url if ad.image else None
+#         })
+class AdDetailView(RetrieveAPIView):
+    queryset = Ad.objects.all()
+    serializer_class = AdDetailSerializer
+    permission_classes = [IsAuthenticated]
 
 
 @method_decorator(csrf_exempt, name="dispatch")

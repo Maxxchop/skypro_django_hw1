@@ -8,14 +8,15 @@ def csv_to_json(filename):
         data = csv.reader(f)
         keys = []
         result = []
-        model_name = 'ads.User'
+        model_name = 'authentication.User'
         for row in data:
             if not keys:
                 keys = row  # первая строчка -- это ключи
             else:
                 dct = {}
                 dct = dict(zip(keys, row))
-                dct['location_id'] = int(dct['location_id'])
+                dct['locations'] = [int(dct['location_id'])]
+                del dct['location_id']
                 dct['age'] = int(dct['age'])
                 pk = int(dct.pop('id'))
                 result.append({

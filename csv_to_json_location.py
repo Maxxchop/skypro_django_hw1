@@ -8,7 +8,7 @@ def csv_to_json(filename):
         data = csv.reader(f)
         keys = []
         result = []
-        model_name = 'ads.Location'
+        model_name = 'authentication.Location'
         for row in data:
             if not keys:
                 keys = row  # первая строчка -- это ключи
