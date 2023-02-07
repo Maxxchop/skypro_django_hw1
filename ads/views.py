@@ -14,7 +14,7 @@ from rest_framework.decorators import permission_classes
 
 from ads.models import Ad, Category, User
 from ads.serializers import UserListSerializer, UserDetailSerializer, UserCreateSerializer, UserUpdateSerializer, \
-    UserDestroySerializer, LocationSerializer, AdDetailSerializer
+    UserDestroySerializer, LocationSerializer, AdDetailSerializer, CategoryCreateSerializer, AdCreateSerializer
 from authentication.models import Location
 from skypro_django_hw1 import settings
 
@@ -134,7 +134,9 @@ class AdCreateView(CreateView):
             'category': ad.category.name,
             'image': ad.image.url if ad.image else None
         })
-
+class AdCreateView(CreateAPIView):
+    queryset = Ad.objects.all()
+    serializer_class = AdCreateSerializer
 
 @method_decorator(csrf_exempt, name="dispatch")
 class AdUpdateView(UpdateView):
@@ -230,22 +232,28 @@ class CatDetailView(DetailView):
         })
 
 
-@method_decorator(csrf_exempt, name='dispatch')
-class CatCreateView(CreateView):
-    model = Category
-    fields = ['user']
+# @method_decorator(csrf_exempt, name='dispatch')
+# class CatCreateView(CreateView):
+#     model = Category
+#     fields = ['user', 'slug']
+#
+#     def post(self, request, *args, **kwargs):
+#         cat_data = json.loads(request.body)
+#
+#         cat = Category.objects.create(
+#             name=cat_data["name"],
+#             slug=cat_data['slug']
+#         )
+#
+#         return JsonResponse({
+#             "id": cat.id,
+#             "name": cat.name,
+#             "slug": cat.slug
+#         })
+class CatCreateView(CreateAPIView):
+    queryset = Category.objects.all()
+    serializer_class = CategoryCreateSerializer
 
-    def post(self, request, *args, **kwargs):
-        cat_data = json.loads(request.body)
-
-        cat = Category.objects.create(
-            name=cat_data["name"]
-        )
-
-        return JsonResponse({
-            "id": cat.id,
-            "name": cat.name
-        })
 
 
 @method_decorator(csrf_exempt, name='dispatch')

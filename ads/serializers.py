@@ -1,7 +1,33 @@
 from rest_framework import serializers
 
-from ads.models import Ad
+from ads.models import Ad, Category
 from authentication.models import Location, User
+
+
+class NotPublishedValidator:
+    def __call__(self, value):
+        if value:
+            raise serializers.ValidationError("Couldn't be published")
+
+
+class AgeAtLeastValidator:
+    def __init__(self, min_age):
+        self.min_age = min_age
+
+    def __call__(self, value):
+        if value < self.min_age:
+            raise serializers.ValidationError(f'Age should be at least {self.min_age} years')
+
+
+class BadDomainValidator:
+    def __init__(self, bad_domains):
+        if not isinstance(bad_domains, list):
+            bad_domains = [bad_domains]
+        self.bad_domains = bad_domains
+
+    def __call__(self, value):
+        if value.split('@')[1] in self.bad_domains:
+            raise serializers.ValidationError('This domain is not allowed')
 
 
 class LocationSerializer(serializers.ModelSerializer):
@@ -42,7 +68,8 @@ class UserCreateSerializer(serializers.ModelSerializer):
         many=True,
         queryset=Location.objects.all()
     )
-    age = serializers.IntegerField(required=False, default=18)
+    age = serializers.IntegerField(required=False, default=18, validators=[AgeAtLeastValidator(9)])
+    email = serializers.EmailField(required=False, validators=[BadDomainValidator(['rambler.ru'])])
     class Meta:
         model = User
         fields = '__all__'
@@ -111,6 +138,20 @@ class UserDestroySerializer(serializers.ModelSerializer):
 
 class AdDetailSerializer(serializers.ModelSerializer):
 
+    class Meta:
+        model = Ad
+        fields = '__all__'
+
+
+class CategoryCreateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Category
+        fields = '__all__'
+
+
+class AdCreateSerializer(serializers.ModelSerializer):
+    is_published = serializers.BooleanField(validators=[NotPublishedValidator()])
     class Meta:
         model = Ad
         fields = '__all__'
